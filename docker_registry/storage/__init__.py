@@ -82,6 +82,11 @@ class Storage(object):
             namespace=namespace, repository=repository)
         return '{0}/_private'.format(repository_path)
 
+    def push_hook_path(self, namespace, repository):
+        repository_path = self.repository_path(
+            namespace=namespace, repository=repository)
+        return '{0}/_push_hook'.format(repository_path)
+
     def is_private(self, namespace, repository):
         return self.exists(self.private_flag_path(namespace, repository))
 
@@ -119,6 +124,14 @@ class Storage(object):
 
     def get_size(self, path):
         raise NotImplementedError
+
+    def get_push_hook_path(self, namespace, repository):
+        push_hook_path = self.push_hook_path(namespace, repository)
+
+        if not self.exists(push_hook_path):
+            return ''
+
+        return self.get_content(push_hook_path)
 
 
 def temp_store_handler():

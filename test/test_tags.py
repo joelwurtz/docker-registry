@@ -92,6 +92,22 @@ class TestTags(base.TestCase):
         self.assertEqual(resp.status_code, 200, resp.data)
         self.assertEqual(len(json.loads(resp.data)), 2, resp.data)
 
+        # test set properties
+        url = '/v1/repositories/foo/{0}/properties'.format(repos_name)
+        resp = self.http_client.put(url, data=json.dumps({
+            'access': 'private',
+            'push_hook': 'http://dummy.localhost'
+        }))
+        self.assertEqual(resp.status_code, 200, resp.data)
+
+        # test get properties
+        url = '/v1/repositories/foo/{0}/properties'.format(repos_name)
+        resp = self.http_client.get(url)
+        self.assertEqual(resp.status_code, 200, resp.data)
+        props = json.loads(resp.data)
+        self.assertEqual(props['access'], 'private')
+        self.assertEqual(props['push_hook'], 'http://dummy.localhost')
+
         # test tag delete
         url = '/v1/repositories/foo/{0}/tags/latest'.format(repos_name)
         resp = self.http_client.delete(url)

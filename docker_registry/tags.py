@@ -33,10 +33,13 @@ def set_properties(namespace, repo):
     if not data or not isinstance(data, dict):
         return toolkit.api_error('Invalid data')
     private_flag_path = store.private_flag_path(namespace, repo)
+    push_hook_path = store.push_hook_path(namespace, repo)
     if data['access'] == 'private' and not store.is_private(namespace, repo):
         store.put_content(private_flag_path, '')
     elif data['access'] == 'public' and store.is_private(namespace, repo):
         store.remove(private_flag_path)
+    if 'push_hook' in data:
+        store.put_content(push_hook_path, data['push_hook'])
     return toolkit.response()
 
 
@@ -48,7 +51,8 @@ def get_properties(namespace, repo):
                  repo))
     is_private = store.is_private(namespace, repo)
     return toolkit.response({
-        'access': 'private' if is_private else 'public'
+        'access': 'private' if is_private else 'public',
+        'push_hook': store.get_push_hook_path(namespace, repo)
     })
 
 
